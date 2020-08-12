@@ -2,6 +2,8 @@
 
 **GoPanic** is an unofficial Go client for the [CryptoPanic API][api].
 
+[Docs](https://pkg.go.dev/github.com/bfontaine/gopanic?tab=doc)
+
 [api]: https://cryptopanic.com/developers/api/
 
 ## Example usage
