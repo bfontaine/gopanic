@@ -53,29 +53,43 @@ func New(authToken string) *API {
 	}
 }
 
-// Posts returns a sequence of posts
-func (api *API) Posts() (*Response, error) {
+// Posts returns a response containing a sequence of posts
+func (api *API) Posts() (*PostsResponse, error) {
 	return api.FilteredPosts(Filter{})
 }
 
 // News is like Posts but it only returns posts of type 'news' (no 'media')
-func (api *API) News() (*Response, error) {
+func (api *API) News() (*PostsResponse, error) {
 	return api.FilteredPosts(Filter{
 		Kind: "news",
 	})
 }
 
 // FilteredPosts is like Posts but with filters
-func (api *API) FilteredPosts(p Filter) (*Response, error) {
+func (api *API) FilteredPosts(p Filter) (*PostsResponse, error) {
 	url := api.makeURL("/posts/", p.encode())
 
-	return api.call(url)
+	return api.postsCall(url)
 }
 
 // FilteredNews is like FilteredPosts with Kind set to "news"
-func (api *API) FilteredNews(p Filter) (*Response, error) {
+func (api *API) FilteredNews(p Filter) (*PostsResponse, error) {
 	p.Kind = "news"
 	return api.FilteredPosts(p)
+}
+
+// Portfolio returns a response containing a user and a portfolio
+func (api *API) Portfolio() (*PortfolioResponse, error) {
+	url := api.makeURL("/portfolio/", url.Values{})
+
+	resp, err := api.call(url, &PortfolioResponse{})
+	if err == nil {
+		pResp := resp.(*PortfolioResponse)
+		pResp.BaseResponse.api = api
+		return pResp, pResp.Error()
+	}
+
+	return resp.(*PortfolioResponse), err
 }
 
 // makeURL creates an URL given a path and params.
@@ -97,7 +111,18 @@ func (api *API) makeURL(path string, params url.Values) string {
 	return fmt.Sprintf("%s/%s%s?%s", APIURL, APIVersion, path, params.Encode())
 }
 
-func (api *API) call(url string) (*Response, error) {
+func (api *API) postsCall(url string) (*PostsResponse, error) {
+	resp, err := api.call(url, &PostsResponse{})
+	if err == nil {
+		pResp := resp.(*PostsResponse)
+		pResp.BaseResponse.api = api
+
+		return pResp, pResp.Error()
+	}
+	return resp.(*PostsResponse), err
+}
+
+func (api *API) call(url string, jsonResp interface{}) (interface{}, error) {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
@@ -116,13 +141,10 @@ func (api *API) call(url string) (*Response, error) {
 		return nil, err
 	}
 
-	var jsonResp Response
-	err = json.Unmarshal(body, &jsonResp)
+	err = json.Unmarshal(body, jsonResp)
 	if err != nil {
 		return nil, err
 	}
 
-	jsonResp.api = api
-
-	return &jsonResp, jsonResp.Error()
+	return jsonResp, nil
 }

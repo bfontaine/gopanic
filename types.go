@@ -114,14 +114,7 @@ func (p Filter) encode() url.Values {
 	return v
 }
 
-// Response represents a response from the API
-type Response struct {
-	TotalCount int    `json:"count"`
-	Posts      []Post `json:"results"`
-
-	next     string
-	previous string
-
+type BaseResponse struct {
 	// errors
 	Status string
 	Info   string
@@ -129,30 +122,41 @@ type Response struct {
 	api *API
 }
 
+// PostsResponse represents a response from the Posts API
+type PostsResponse struct {
+	BaseResponse
+
+	TotalCount int    `json:"count"`
+	Posts      []Post `json:"results"`
+
+	next     string
+	previous string
+}
+
 // HasNext returns true if the response has a next page
-func (r Response) HasNext() bool { return r.next != "" }
+func (r PostsResponse) HasNext() bool { return r.next != "" }
 
 // HasPrevious returns true if the response has a previous page
-func (r Response) HasPrevious() bool { return r.previous != "" }
+func (r PostsResponse) HasPrevious() bool { return r.previous != "" }
 
 // Next returns the next page of results, if any
-func (r Response) Next() (*Response, error) {
+func (r PostsResponse) Next() (*PostsResponse, error) {
 	if !r.HasNext() {
 		return nil, ErrNoNext
 	}
-	return r.api.call(r.next)
+	return r.api.postsCall(r.next)
 }
 
 // Previous returns the previous page of results, if any
-func (r Response) Previous() (*Response, error) {
+func (r PostsResponse) Previous() (*PostsResponse, error) {
 	if !r.HasPrevious() {
 		return nil, ErrNoPrevious
 	}
-	return r.api.call(r.previous)
+	return r.api.postsCall(r.previous)
 }
 
 // Error returns the error (if any) for this response
-func (r Response) Error() error {
+func (r BaseResponse) Error() error {
 	// Statuses aren't documented;here are the ones I encountered:
 	switch r.Status {
 	case "":
@@ -176,4 +180,37 @@ func (r Response) Error() error {
 	default:
 		return fmt.Errorf("Error: %s", r.Info)
 	}
+}
+
+// User represents a user
+type User struct {
+	Username, Email string
+}
+
+// Entry represents a portfolio entry
+type Entry struct {
+	ID             int
+	Title          string
+	Currency       Currency
+	Amount         float64
+	AmountUSD      float64 `json:"amount_usd"`
+	AmountUSDRound string  `json:"amount_usd_round"`
+	Percentage     float64
+	P24, P1H, P7D  float64
+}
+
+// Portfolio represents a portfolio
+type Portfolio struct {
+	CurrencyCode   string `json:"portfolio_currency"`
+	Entries        []Entry
+	Totals         map[string]string
+	PercentChanges map[string]string `json:"percent_changes"`
+}
+
+// PortfolioResponse represents a response from the Portfolio API
+type PortfolioResponse struct {
+	BaseResponse
+
+	User      User
+	Portfolio Portfolio
 }

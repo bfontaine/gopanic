@@ -8,6 +8,8 @@
 
 ## Example usage
 
+### Posts
+
 ```golang
 package main
 
@@ -31,13 +33,15 @@ func main() {
 		fmt.Printf("# [%s] %s\n",
 			strings.Join(post.CurrencyCodes(), ", "),
 			post.Title)
+		// See https://pkg.go.dev/github.com/bfontaine/gopanic?tab=doc#Post
+		// for all the fields and methods you can use on Post instances
 	}
 	// prints something like:
-	// # [] Blablabla
-	// # [BTC] Something Bitcoin Something
-	// # [ETC, DAI] Something ETC+DAI
-	// # [BTC] Another BTC something
-	// ...
+	//   # [] Blablabla
+	//   # [BTC] Something Bitcoin Something
+	//   # [ETC, DAI] Something ETC+DAI
+	//   # [BTC] Another BTC something
+	//   ...
 
 	// Same, but exclude media posts
 	resp, err = api.News()
@@ -67,6 +71,57 @@ func main() {
 	// Setting these without meeting the requirements will result in errors on
 	// all your calls: ErrProOnly and ErrApprovedOnly.
 }
+```
+
+### Portfolio
+
+```golang
+package main
+
+import (
+	"fmt"
+
+	"github.com/bfontaine/gopanic"
+)
+
+func main() {
+	api := gopanic.New("<your token>")
+
+    // Get your portfolio
+	resp, err := api.Portfolio()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+    user := resp.User
+    portfolio := resp.Portfolio
+
+	fmt.Printf("# User: %s (%s)\n", user.Username, user.Email)
+    // print something like:
+    //   # foo42 (foo@example.com)
+
+	fmt.Printf("# Portfolio (%s):\n", portfolio.CurrencyCode)
+	fmt.Println("Totals:")
+	for code, amount := range portfolio.Totals {
+		fmt.Printf("- %s: %s\n", code, amount)
+	}
+    // prints something like:
+    //   # Portfolio (USD):
+    //   Totals:
+    //   - ETH: 123.4567890
+    //   - USD: 456.78
+    //   - BTC: 0.012345600
+
+	fmt.Println("Entries:")
+	for _, entry := range portfolio.Entries {
+		fmt.Printf("- %f %s (%.2f%%)\n", entry.Amount, entry.Currency.Code, entry.Percentage)
+	}
+    // prints something like:
+    //   Entries:
+    //   - 0.01234 BTC (42.34%)
+    //   - 0.56789 ETH (34.56%)
+    //   - 50.00000 ALGO (3.23%)
+    //   ...
 ```
 
 ## Setup

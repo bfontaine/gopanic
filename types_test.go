@@ -116,16 +116,16 @@ func TestFilterEncode(t *testing.T) {
 		}.encode().Encode())
 }
 
-func TestResponseHasNext(t *testing.T) {
-	assert.True(t, Response{next: "http://"}.HasNext())
-	assert.False(t, Response{next: ""}.HasNext())
+func TestPostsResponseHasNext(t *testing.T) {
+	assert.True(t, PostsResponse{next: "http://"}.HasNext())
+	assert.False(t, PostsResponse{next: ""}.HasNext())
 }
 
-func TestResponseHasPrevious(t *testing.T) {
-	assert.True(t, Response{previous: "http://"}.HasPrevious())
-	assert.False(t, Response{previous: ""}.HasPrevious())
+func TestPostsResponseHasPrevious(t *testing.T) {
+	assert.True(t, PostsResponse{previous: "http://"}.HasPrevious())
+	assert.False(t, PostsResponse{previous: ""}.HasPrevious())
 }
 
-func TestResponseError(t *testing.T) {
-	assert.Nil(t, Response{}.Error())
+func TestPostsResponseError(t *testing.T) {
+	assert.Nil(t, PostsResponse{}.Error())
 }
