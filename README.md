@@ -87,41 +87,41 @@ import (
 func main() {
 	api := gopanic.New("<your token>")
 
-    // Get your portfolio
+	// Get your portfolio
 	resp, err := api.Portfolio()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-    user := resp.User
-    portfolio := resp.Portfolio
+	user := resp.User
+	portfolio := resp.Portfolio
 
 	fmt.Printf("# User: %s (%s)\n", user.Username, user.Email)
-    // print something like:
-    //   # foo42 (foo@example.com)
+	// print something like:
+	//   # foo42 (foo@example.com)
 
 	fmt.Printf("# Portfolio (%s):\n", portfolio.CurrencyCode)
 	fmt.Println("Totals:")
 	for code, amount := range portfolio.Totals {
 		fmt.Printf("- %s: %s\n", code, amount)
 	}
-    // prints something like:
-    //   # Portfolio (USD):
-    //   Totals:
-    //   - ETH: 123.4567890
-    //   - USD: 456.78
-    //   - BTC: 0.012345600
+	// prints something like:
+	//   # Portfolio (USD):
+	//   Totals:
+	//   - ETH: 123.4567890
+	//   - USD: 456.78
+	//   - BTC: 0.012345600
 
 	fmt.Println("Entries:")
 	for _, entry := range portfolio.Entries {
 		fmt.Printf("- %f %s (%.2f%%)\n", entry.Amount, entry.Currency.Code, entry.Percentage)
 	}
-    // prints something like:
-    //   Entries:
-    //   - 0.01234 BTC (42.34%)
-    //   - 0.56789 ETH (34.56%)
-    //   - 50.00000 ALGO (3.23%)
-    //   ...
+	// prints something like:
+	//   Entries:
+	//   - 0.01234 BTC (42.34%)
+	//   - 0.56789 ETH (34.56%)
+	//   - 50.00000 ALGO (3.23%)
+	//   ...
 ```
 
 ## Setup
