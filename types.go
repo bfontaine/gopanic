@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-// Post represents a post
+// Post represents a post.
 type Post struct {
 	// Kind can be either "news" or "media"
 	Kind       string
@@ -27,34 +27,34 @@ type Post struct {
 	Description string
 }
 
-// Comments returns the comments count on the post
+// Comments returns the comments count on the post.
 func (p Post) Comments() int { return p.Votes["comments"] }
 
-// Saved returns the 'saved' count on the post
+// Saved returns the 'saved' count on the post.
 func (p Post) Saved() int { return p.Votes["saved"] }
 
-// Likes returns the 'like' votes count on the post
+// Likes returns the 'like' votes count on the post.
 func (p Post) Likes() int { return p.Votes["liked"] }
 
-// Dislikes returns the 'dislike' votes count on the post
+// Dislikes returns the 'dislike' votes count on the post.
 func (p Post) Dislikes() int { return p.Votes["disliked"] }
 
-// PositiveVotes returns the 'positive' votes count on the post
+// PositiveVotes returns the 'positive' votes count on the post.
 func (p Post) PositiveVotes() int { return p.Votes["positive"] }
 
-// NegativeVotes returns the 'negative' votes count on the post
+// NegativeVotes returns the 'negative' votes count on the post.
 func (p Post) NegativeVotes() int { return p.Votes["negative"] }
 
-// ImportantVotes returns the 'important' votes count on the post
+// ImportantVotes returns the 'important' votes count on the post.
 func (p Post) ImportantVotes() int { return p.Votes["important"] }
 
-// LolVotes returns the 'lol' votes count on the post
+// LolVotes returns the 'lol' votes count on the post.
 func (p Post) LolVotes() int { return p.Votes["lol"] }
 
-// ToxicVotes returns the 'toxic' votes count on the post
+// ToxicVotes returns the 'toxic' votes count on the post.
 func (p Post) ToxicVotes() int { return p.Votes["toxic"] }
 
-// CurrencyCodes returns an array of currency codes the post is about
+// CurrencyCodes returns an array of currency codes the post is about.
 func (p Post) CurrencyCodes() []string {
 	codes := make([]string, len(p.Currencies))
 	for i, currency := range p.Currencies {
@@ -63,7 +63,7 @@ func (p Post) CurrencyCodes() []string {
 	return codes
 }
 
-// Currency represents a currency
+// Currency represents a currency.
 type Currency struct {
 	Code  string
 	Title string
@@ -71,7 +71,7 @@ type Currency struct {
 	URL   string
 }
 
-// Source represents a source
+// Source represents the source of a post.
 type Source struct {
 	Title  string
 	Region string
@@ -79,7 +79,7 @@ type Source struct {
 	Path   string
 }
 
-// Filter represents a way to provide filters to the Posts() method
+// Filter represents a way to provide filters to the Posts() method.
 type Filter struct {
 	Public        bool
 	UIFilter      string
@@ -114,6 +114,7 @@ func (p Filter) encode() url.Values {
 	return v
 }
 
+// BaseResponse is a common base for both PostsResponse and PortfolioResponse.
 type BaseResponse struct {
 	// errors
 	Status string
@@ -122,7 +123,7 @@ type BaseResponse struct {
 	api *API
 }
 
-// PostsResponse represents a response from the Posts API
+// PostsResponse represents a response from the Posts API.
 type PostsResponse struct {
 	BaseResponse
 
@@ -133,13 +134,13 @@ type PostsResponse struct {
 	previous string
 }
 
-// HasNext returns true if the response has a next page
+// HasNext returns true if the response has a next page.
 func (r PostsResponse) HasNext() bool { return r.next != "" }
 
-// HasPrevious returns true if the response has a previous page
+// HasPrevious returns true if the response has a previous page.
 func (r PostsResponse) HasPrevious() bool { return r.previous != "" }
 
-// Next returns the next page of results, if any
+// Next returns the next page of results, if any.
 func (r PostsResponse) Next() (*PostsResponse, error) {
 	if !r.HasNext() {
 		return nil, ErrNoNext
@@ -147,7 +148,7 @@ func (r PostsResponse) Next() (*PostsResponse, error) {
 	return r.api.postsCall(r.next)
 }
 
-// Previous returns the previous page of results, if any
+// Previous returns the previous page of results, if any.
 func (r PostsResponse) Previous() (*PostsResponse, error) {
 	if !r.HasPrevious() {
 		return nil, ErrNoPrevious
@@ -155,7 +156,7 @@ func (r PostsResponse) Previous() (*PostsResponse, error) {
 	return r.api.postsCall(r.previous)
 }
 
-// Error returns the error (if any) for this response
+// Error returns the error (if any) for this response.
 func (r BaseResponse) Error() error {
 	// Statuses aren't documented;here are the ones I encountered:
 	switch r.Status {
@@ -174,6 +175,8 @@ func (r BaseResponse) Error() error {
 			return ErrProOnly
 		case "Access Denied. This API key is not approved for Partners API.":
 			return ErrApprovedOnly
+		case "No data in portfolio":
+			return ErrNoPortfolio
 		default:
 			return fmt.Errorf("Invalid query: %s", r.Info)
 		}

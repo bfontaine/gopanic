@@ -10,32 +10,33 @@ import (
 )
 
 const (
-	// APIURL is the API base URL
+	// APIURL is the API base URL.
 	APIURL = "https://cryptopanic.com/api"
-	// APIVersion is the API version
+	// APIVersion is the API version.
 	APIVersion = "v1"
-	// APIUserAgent is the User-Agent header sent with API requests
+	// APIUserAgent is the User-Agent header sent with API requests.
 	APIUserAgent = "GoPanic +github.com/bfontaine/gopanic"
 )
 
 var (
-	// ErrNoNext represents the error when a response has no next page
+	// ErrNoNext represents the error when a response has no next page.
 	ErrNoNext error = errors.New("Response has no next page")
-	// ErrNoPrevious represents the error when a response has no previous page
+	// ErrNoPrevious represents the error when a response has no previous page.
 	ErrNoPrevious error = errors.New("Response has no previous page")
-	// ErrBadToken represents the error when the auth token is invalid
+	// ErrBadToken represents the error when the auth token is invalid.
 	ErrBadToken error = errors.New("Unrecognized auth token")
-	// ErrProOnly represents the error when the query needs you to be PRO
+	// ErrProOnly represents the error when the query needs you to be PRO.
 	ErrProOnly error = errors.New("You need to be PRO to get extra metadata")
-	// ErrApprovedOnly represents the error when the query needs you to be approved
+	// ErrApprovedOnly represents the error when the query needs you to be approved.
 	ErrApprovedOnly error = errors.New("You need to be Approved to get original sources")
+	// ErrNoPortfolio represents the error when you call .Portfolio() but don't have a portfolio.
+	ErrNoPortfolio error = errors.New("No data in portfolio")
 )
 
-// API represents a CryptoPanic API client instance
+// API represents a CryptoPanic API client instance.
 type API struct {
 	authToken string
 	client    *http.Client
-
 	// Set this to true if you have a PRO account and want extra metadata on
 	// posts such as image and description fields.
 	ExtraMetadata bool
@@ -45,7 +46,7 @@ type API struct {
 	OriginalSource bool
 }
 
-// New creates a new API
+// New creates a new API.
 func New(authToken string) *API {
 	return &API{
 		authToken: authToken,
@@ -53,32 +54,32 @@ func New(authToken string) *API {
 	}
 }
 
-// Posts returns a response containing a sequence of posts
+// Posts returns a response containing a sequence of posts.
 func (api *API) Posts() (*PostsResponse, error) {
 	return api.FilteredPosts(Filter{})
 }
 
-// News is like Posts but it only returns posts of type 'news' (no 'media')
+// News is like Posts but it only returns posts of type 'news' (no 'media').
 func (api *API) News() (*PostsResponse, error) {
 	return api.FilteredPosts(Filter{
 		Kind: "news",
 	})
 }
 
-// FilteredPosts is like Posts but with filters
+// FilteredPosts is like Posts but with filters.
 func (api *API) FilteredPosts(p Filter) (*PostsResponse, error) {
 	url := api.makeURL("/posts/", p.encode())
 
 	return api.postsCall(url)
 }
 
-// FilteredNews is like FilteredPosts with Kind set to "news"
+// FilteredNews is like FilteredPosts with Kind set to "news".
 func (api *API) FilteredNews(p Filter) (*PostsResponse, error) {
 	p.Kind = "news"
 	return api.FilteredPosts(p)
 }
 
-// Portfolio returns a response containing a user and a portfolio
+// Portfolio returns a response containing a user and a portfolio.
 func (api *API) Portfolio() (*PortfolioResponse, error) {
 	url := api.makeURL("/portfolio/", url.Values{})
 
