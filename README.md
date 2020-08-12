@@ -1,8 +1,10 @@
 # GoPanic
 
+![Go](https://github.com/bfontaine/gopanic/workflows/Go/badge.svg)
+
 **GoPanic** is an unofficial Go client for the [CryptoPanic API][api].
 
-[Docs](https://pkg.go.dev/github.com/bfontaine/gopanic?tab=doc)
+[**Docs**](https://pkg.go.dev/github.com/bfontaine/gopanic?tab=doc)
 
 [api]: https://cryptopanic.com/developers/api/
 
