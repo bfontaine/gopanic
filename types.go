@@ -13,9 +13,9 @@ type Post struct {
 	Domain     string
 	Title      string
 	Slug       string
-	ID         int64
+	ID         int
 	URL        string
-	Votes      map[string]int64
+	Votes      map[string]int
 	Currencies []Currency
 	Source     Source
 
@@ -28,31 +28,31 @@ type Post struct {
 }
 
 // Comments returns the comments count on the post
-func (p Post) Comments() int64 { return p.Votes["comments"] }
+func (p Post) Comments() int { return p.Votes["comments"] }
 
 // Saved returns the 'saved' count on the post
-func (p Post) Saved() int64 { return p.Votes["saved"] }
+func (p Post) Saved() int { return p.Votes["saved"] }
 
 // Likes returns the 'like' votes count on the post
-func (p Post) Likes() int64 { return p.Votes["liked"] }
+func (p Post) Likes() int { return p.Votes["liked"] }
 
 // Dislikes returns the 'dislike' votes count on the post
-func (p Post) Dislikes() int64 { return p.Votes["disliked"] }
+func (p Post) Dislikes() int { return p.Votes["disliked"] }
 
 // PositiveVotes returns the 'positive' votes count on the post
-func (p Post) PositiveVotes() int64 { return p.Votes["positive"] }
+func (p Post) PositiveVotes() int { return p.Votes["positive"] }
 
 // NegativeVotes returns the 'negative' votes count on the post
-func (p Post) NegativeVotes() int64 { return p.Votes["negative"] }
+func (p Post) NegativeVotes() int { return p.Votes["negative"] }
 
 // ImportantVotes returns the 'important' votes count on the post
-func (p Post) ImportantVotes() int64 { return p.Votes["important"] }
+func (p Post) ImportantVotes() int { return p.Votes["important"] }
 
 // LolVotes returns the 'lol' votes count on the post
-func (p Post) LolVotes() int64 { return p.Votes["lol"] }
+func (p Post) LolVotes() int { return p.Votes["lol"] }
 
 // ToxicVotes returns the 'toxic' votes count on the post
-func (p Post) ToxicVotes() int64 { return p.Votes["toxic"] }
+func (p Post) ToxicVotes() int { return p.Votes["toxic"] }
 
 // CurrencyCodes returns an array of currency codes the post is about
 func (p Post) CurrencyCodes() []string {
@@ -119,8 +119,8 @@ type Response struct {
 	TotalCount int    `json:"count"`
 	Posts      []Post `json:"results"`
 
-	next     *string
-	previous *string
+	next     string
+	previous string
 
 	// errors
 	Status string
@@ -130,17 +130,17 @@ type Response struct {
 }
 
 // HasNext returns true if the response has a next page
-func (r Response) HasNext() bool { return r.next != nil }
+func (r Response) HasNext() bool { return r.next != "" }
 
 // HasPrevious returns true if the response has a previous page
-func (r Response) HasPrevious() bool { return r.previous != nil }
+func (r Response) HasPrevious() bool { return r.previous != "" }
 
 // Next returns the next page of results, if any
 func (r Response) Next() (*Response, error) {
 	if !r.HasNext() {
 		return nil, ErrNoNext
 	}
-	return r.api.call(*r.next)
+	return r.api.call(r.next)
 }
 
 // Previous returns the previous page of results, if any
@@ -148,7 +148,7 @@ func (r Response) Previous() (*Response, error) {
 	if !r.HasPrevious() {
 		return nil, ErrNoPrevious
 	}
-	return r.api.call(*r.previous)
+	return r.api.call(r.previous)
 }
 
 // Error returns the error (if any) for this response
